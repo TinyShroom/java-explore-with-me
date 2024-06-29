@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.practicum.dto.EndpointHitCreateDto;
 import ru.practicum.dto.ViewStatsDto;
+import ru.practicum.logging.Logging;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -26,7 +27,8 @@ public class StatsClient {
         this.serverUrl = serverUrl;
     }
 
-    protected List<ViewStatsDto> get(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+    @Logging
+    public List<ViewStatsDto> get(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         var endpoint = "/stats";
         var urisString = "";
@@ -48,6 +50,7 @@ public class StatsClient {
         return response.getBody();
     }
 
+    @Logging
     public void post(EndpointHitCreateDto endpointHitCreateDto) {
         HttpEntity<Object> requestEntity = new HttpEntity<>(endpointHitCreateDto);
         var endpoint = "/hit";

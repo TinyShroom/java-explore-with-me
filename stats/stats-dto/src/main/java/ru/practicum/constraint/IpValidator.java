@@ -9,6 +9,6 @@ public class IpValidator implements ConstraintValidator<Ip, String> {
     private static final Pattern PATTERN = Pattern.compile("^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$");
 
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
-        return PATTERN.matcher(value).matches();
+        return value != null && PATTERN.matcher(value).matches();
     }
 }
