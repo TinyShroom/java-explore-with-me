@@ -8,7 +8,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.dto.EndpointHitCreateDto;
 import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.mapper.EndpointHitMapper;
-import ru.practicum.mapper.ViewStatsMapper;
 import ru.practicum.model.EndpointHit;
 
 import javax.persistence.EntityManager;
@@ -25,7 +24,6 @@ class StatsServiceImplTest {
 
     private final StatsService statsService;
     private final EndpointHitMapper endpointHitMapper;
-    private final ViewStatsMapper viewStatsMapper;
     private final EntityManager em;
 
     @Test

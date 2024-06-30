@@ -7,8 +7,6 @@ import ru.practicum.dao.StatsRepository;
 import ru.practicum.dto.EndpointHitCreateDto;
 import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.mapper.EndpointHitMapper;
-import ru.practicum.mapper.ViewStatsMapper;
-import ru.practicum.model.ViewStats;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,7 +16,6 @@ import java.util.List;
 public class StatsServiceImpl implements StatsService {
 
     private final StatsRepository statsRepository;
-    private final ViewStatsMapper viewStatsMapper;
     private final EndpointHitMapper endpointHitMapper;
 
     @Override
@@ -30,20 +27,18 @@ public class StatsServiceImpl implements StatsService {
     @Override
     @Transactional(readOnly = true)
     public List<ViewStatsDto> get(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
-        List<ViewStats> result;
         if (uris == null) {
             if (unique) {
-                result = statsRepository.findUnique(start, end);
+                return statsRepository.findUnique(start, end);
             } else {
-                result = statsRepository.findAll(start, end);
+                return statsRepository.findAll(start, end);
             }
         } else {
             if (unique) {
-                result = statsRepository.findUniqueByUris(start, end, uris);
+                return statsRepository.findUniqueByUris(start, end, uris);
             } else {
-                result = statsRepository.findByUris(start, end, uris);
+                return statsRepository.findByUris(start, end, uris);
             }
         }
-        return viewStatsMapper.toDto(result);
     }
 }
