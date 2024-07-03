@@ -1,13 +1,16 @@
 package ru.practicum.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import ru.practicum.dto.EndpointHitCreateDto;
 import ru.practicum.model.EndpointHit;
 
-@Mapper(componentModel = "spring")
-public interface EndpointHitMapper {
+public class EndpointHitMapper {
 
-    @Mapping(target = "id", ignore = true)
-    EndpointHit toModel(EndpointHitCreateDto userDto);
+    public static EndpointHit toModel(EndpointHitCreateDto dto) {
+        return EndpointHit.builder()
+                .app(dto.getApp())
+                .ip(dto.getIp())
+                .uri(dto.getUri())
+                .timestamp(dto.getTimestamp())
+                .build();
+    }
 }

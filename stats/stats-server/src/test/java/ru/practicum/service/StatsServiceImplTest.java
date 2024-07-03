@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.dto.EndpointHitCreateDto;
 import ru.practicum.dto.ViewStatsDto;
-import ru.practicum.mapper.EndpointHitMapper;
 import ru.practicum.model.EndpointHit;
 
 import javax.persistence.EntityManager;
@@ -23,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class StatsServiceImplTest {
 
     private final StatsService statsService;
-    private final EndpointHitMapper endpointHitMapper;
     private final EntityManager em;
 
     @Test

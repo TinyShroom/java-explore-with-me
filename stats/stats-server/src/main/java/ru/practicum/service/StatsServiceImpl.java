@@ -16,12 +16,11 @@ import java.util.List;
 public class StatsServiceImpl implements StatsService {
 
     private final StatsRepository statsRepository;
-    private final EndpointHitMapper endpointHitMapper;
 
     @Override
     @Transactional
     public void create(EndpointHitCreateDto endpointHitCreateDto) {
-        statsRepository.save(endpointHitMapper.toModel(endpointHitCreateDto));
+        statsRepository.save(EndpointHitMapper.toModel(endpointHitCreateDto));
     }
 
     @Override

@@ -49,6 +49,7 @@ public class StatsClientImpl implements StatsClient {
                     });
             if (!response.getStatusCode().is2xxSuccessful()) {
                 log.info("StatsClientImpl.get() uri: {} http-status: {}", uri, response.getStatusCode());
+                return Collections.emptyList();
             }
             return response.getBody();
         } catch (Exception e) {
