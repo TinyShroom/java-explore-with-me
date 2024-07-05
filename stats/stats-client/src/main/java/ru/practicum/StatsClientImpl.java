@@ -31,6 +31,8 @@ public class StatsClientImpl implements StatsClient {
 
     @Override
     public List<ViewStatsDto> get(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+        log.info(">> StatsClientImpl.get(), start: {}, end: {}, urisSize: {}, unique: {}",
+                start, end, uris.size(), unique);
         var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         var uriBuilder = UriComponentsBuilder
                 .fromUriString(serverUrl)
@@ -60,6 +62,7 @@ public class StatsClientImpl implements StatsClient {
 
     @Override
     public void post(EndpointHitCreateDto endpointHitCreateDto) {
+        log.info(">> StatsClientImpl.post(), args: {}", endpointHitCreateDto);
         HttpEntity<Object> requestEntity = new HttpEntity<>(endpointHitCreateDto);
         var uri = UriComponentsBuilder
                 .fromUriString(serverUrl)
