@@ -3,6 +3,7 @@ package ru.practicum.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -31,6 +32,13 @@ public class ControllerExceptionHandler {
     @ExceptionHandler
     public ErrorDto exceptionHandler(IllegalArgumentException e) {
         log.info("IllegalArgumentException: {}", e.getMessage());
+        return new ErrorDto(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto exceptionHandler(MissingServletRequestParameterException e) {
+        log.info("MissingServletRequestParameterException: {}", e.getMessage());
         return new ErrorDto(e.getMessage());
     }
 
