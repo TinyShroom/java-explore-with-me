@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import ru.practicum.constraint.Ip;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -21,7 +20,7 @@ public class EndpointHitCreateDto {
     private String app;
     @NotBlank
     private String uri;
-    @Ip
+    @NotBlank
     private String ip;
     @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
