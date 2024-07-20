@@ -3,6 +3,7 @@ package ru.practicum.users.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.ErrorMessages;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.users.dao.UserRepository;
@@ -20,6 +21,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     private final UserMapper userMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserDto> get(List<Long> ids, Pageable pageable) {
         if (ids == null) {
             return userMapper.toDto(userRepository.findAll(pageable));
@@ -29,12 +31,14 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
+    @Transactional
     public UserDto create(UserCreateDto userCreateDto) {
         var user = userRepository.save(userMapper.toModel(userCreateDto));
         return userMapper.toDto(user);
     }
 
     @Override
+    @Transactional
     public void delete(long userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessages.USER_NOT_FOUND.getFormatMessage(userId)));

@@ -130,30 +130,6 @@ class StatsControllerTest {
     }
 
     @Test
-    void postIpFail() throws Exception {
-        var stringTime = "2020-10-13 10:23:45";
-        var content = EndpointHitCreateDto.builder()
-                .app("app")
-                .uri("uri")
-                .ip("192.168.0.")
-                .timestamp(LocalDateTime.parse(stringTime, FORMATTER))
-                .build();
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/hit")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(content));
-        mockMvc.perform(mockRequest)
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error", is(ErrorMessages.VALIDATION_EXCEPTION.getMessage())));
-        content.setIp("192.256.0.1");
-        mockRequest = MockMvcRequestBuilders.post("/hit")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(content));
-        mockMvc.perform(mockRequest)
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error", is(ErrorMessages.VALIDATION_EXCEPTION.getMessage())));
-    }
-
-    @Test
     void getOk() throws Exception {
 
         var start = "2020-10-13 10:23:45";

@@ -41,6 +41,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     private final RequestMapper requestMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> getAll(long userId, Pageable pageable) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessages.USER_NOT_FOUND.getFormatMessage(userId)));
@@ -49,6 +50,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
     @Override
+    @Transactional
     public EventFullDto create(long userId, EventCreateDto eventCreateDto) {
         var initiator = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessages.USER_NOT_FOUND.getFormatMessage(userId)));
@@ -64,6 +66,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public EventFullDto get(long userId, long eventId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessages.USER_NOT_FOUND.getFormatMessage(userId)));
@@ -73,6 +76,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
     @Override
+    @Transactional
     public EventFullDto update(long userId, long eventId, EventUserUpdateDto updateEventDto) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessages.USER_NOT_FOUND.getFormatMessage(userId)));
