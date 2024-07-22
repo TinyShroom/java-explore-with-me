@@ -29,5 +29,5 @@ public interface CompilationsMapper {
 
     CompilationDto toDto(Compilation compilation);
 
-    List<CompilationDto> toDto(Page<Compilation> categories);
+    List<CompilationDto> toDto(Page<Compilation> compilations);
 }

@@ -19,8 +19,10 @@ public interface ParticipationRequestRepository extends JpaRepository<Participat
 
     Optional<ParticipationRequest> findByIdAndRequesterId(long requestId, long userId);
 
+    @EntityGraph("requests")
     List<ParticipationRequest> findAllByEventId(long eventId);
 
+    @EntityGraph("requests")
     List<ParticipationRequest> findAllByEventIdAndIdIn(long eventId, List<Long> requestIds);
 
     @Query("select new ru.practicum.events.model.RequestsCount(pr.event.id, count(pr.id)) " +

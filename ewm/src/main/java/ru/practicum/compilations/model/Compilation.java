@@ -12,6 +12,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedSubgraph;
 import javax.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +23,21 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "compilations")
+@NamedEntityGraph(
+        name = "compilation",
+        attributeNodes = {
+                @NamedAttributeNode(value = "events", subgraph = "event-short")
+        },
+        subgraphs = {
+                @NamedSubgraph(
+                        name = "event-short",
+                        attributeNodes = {
+                                @NamedAttributeNode("initiator"),
+                                @NamedAttributeNode("category")
+                        }
+                )
+        }
+)
 public class Compilation {
 
     @Id
