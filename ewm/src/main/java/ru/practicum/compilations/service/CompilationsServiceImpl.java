@@ -1,7 +1,9 @@
 package ru.practicum.compilations.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.compilations.dao.CompilationsRepository;
 import ru.practicum.compilations.dto.CompilationCreateDto;
 import ru.practicum.compilations.dto.CompilationDto;
@@ -12,14 +14,14 @@ import ru.practicum.events.model.Event;
 import ru.practicum.exception.ErrorMessages;
 import ru.practicum.exception.NotFoundException;
 
-import javax.transaction.Transactional;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class AdminCompilationsServiceImpl implements AdminCompilationsService {
+public class CompilationsServiceImpl implements CompilationsService {
 
     private final CompilationsRepository compilationsRepository;
     private final EventRepository eventRepository;
@@ -50,11 +52,11 @@ public class AdminCompilationsServiceImpl implements AdminCompilationsService {
         return compilationsMapper.toDto(compilationsRepository.save(oldCompilation));
     }
 
-    private List<Event> findEvents(List<Long> eventIds) {
+    private List<Event> findEvents(Set<Long> eventIds) {
         if (eventIds == null) return null;
         if (eventIds.isEmpty()) return Collections.emptyList();
         var events = eventRepository.findAllById(eventIds);
-        if (events.size() < eventIds.size()) {
+        if (events.size() != eventIds.size()) {
             eventIds.removeAll(events.stream()
                     .map(Event::getId)
                     .collect(Collectors.toSet())
@@ -63,5 +65,24 @@ public class AdminCompilationsServiceImpl implements AdminCompilationsService {
                     eventIds.toString()));
         }
         return events;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CompilationDto> getAll(Boolean pinned, Pageable pageable) {
+        if (pinned == null) {
+            return compilationsMapper.toDto(compilationsRepository.findAll(pageable));
+        } else {
+            return compilationsMapper.toDto(compilationsRepository.findAllByPinned(pinned, pageable));
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CompilationDto get(long compId) {
+        var compilation = compilationsRepository.findById(compId)
+                .orElseThrow(() -> new NotFoundException(
+                        ErrorMessages.COMPILATION_NOT_FOUND.getFormatMessage(compId)));
+        return compilationsMapper.toDto(compilation);
     }
 }

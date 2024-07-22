@@ -6,7 +6,7 @@ import ru.practicum.users.dto.UserDto;
 
 import java.util.List;
 
-public interface AdminUserService {
+public interface UserService {
 
     List<UserDto> get(List<Long> ids, Pageable pageable);
 

@@ -5,21 +5,7 @@ import lombok.Setter;
 import ru.practicum.categories.model.Category;
 import ru.practicum.users.model.User;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -53,7 +39,7 @@ public class Event {
     @ManyToOne(fetch = FetchType.LAZY)
     private User initiator;
     @JoinColumn(name = "location_id")
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Location location;
     private Boolean paid;
     @Column(name = "participant_limit")

@@ -5,24 +5,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.events.dto.EventCreateDto;
-import ru.practicum.events.dto.EventFullDto;
-import ru.practicum.events.dto.EventRequestStatusUpdateDto;
-import ru.practicum.events.dto.EventRequestStatusUpdateResultDto;
-import ru.practicum.events.dto.EventShortDto;
-import ru.practicum.events.dto.EventUserUpdateDto;
-import ru.practicum.events.service.PrivateEventService;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.events.dto.*;
+import ru.practicum.events.service.EventService;
 import ru.practicum.logging.Logging;
 import ru.practicum.requests.dto.ParticipationRequestDto;
+import ru.practicum.requests.service.RequestService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -32,9 +20,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/users/{userId}/events")
 @RequiredArgsConstructor
-public class PrivateEventController {
+public class EventPrivateController {
 
-    private final PrivateEventService privateEventService;
+    private final EventService eventService;
+    private final RequestService requestService;
 
     @Logging
     @GetMapping
@@ -42,7 +31,7 @@ public class PrivateEventController {
                                       @RequestParam(defaultValue = "0") @Min(0) int from,
                                       @RequestParam(defaultValue = "10") @Min(1) int size) {
         var pageable = PageRequest.of(from / size, size, Sort.unsorted());
-        return privateEventService.getAll(userId, pageable);
+        return eventService.getAllShort(userId, pageable);
     }
 
     @Logging
@@ -50,32 +39,32 @@ public class PrivateEventController {
     @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto create(@PathVariable long userId,
                                @RequestBody @Valid EventCreateDto eventCreateDto) {
-        return privateEventService.create(userId, eventCreateDto);
+        return eventService.create(userId, eventCreateDto);
     }
 
     @Logging
     @GetMapping("/{eventId}")
     public EventFullDto get(@PathVariable long userId, @PathVariable long eventId) {
-        return privateEventService.get(userId, eventId);
+        return eventService.get(userId, eventId);
     }
 
     @Logging
     @PatchMapping("/{eventId}")
     public EventFullDto update(@PathVariable long userId, @PathVariable long eventId,
                                @RequestBody @Valid EventUserUpdateDto updateEventDto) {
-        return privateEventService.update(userId, eventId, updateEventDto);
+        return eventService.update(userId, eventId, updateEventDto);
     }
 
     @Logging
     @GetMapping("/{eventId}/requests")
     public List<ParticipationRequestDto> getRequests(@PathVariable long userId, @PathVariable long eventId) {
-        return privateEventService.getRequests(userId, eventId);
+        return requestService.getRequests(userId, eventId);
     }
 
     @Logging
     @PatchMapping("/{eventId}/requests")
     public EventRequestStatusUpdateResultDto updateRequest(@PathVariable long userId, @PathVariable long eventId,
                                       @RequestBody @Valid EventRequestStatusUpdateDto statusUpdateRequest) {
-        return privateEventService.updateRequest(userId, eventId, statusUpdateRequest);
+        return requestService.updateRequest(userId, eventId, statusUpdateRequest);
     }
 }
