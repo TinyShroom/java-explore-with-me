@@ -231,7 +231,7 @@ class StatsControllerTest {
                 .param("unique", String.valueOf(unique));
 
         mockMvc.perform(mockRequest)
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -248,6 +248,6 @@ class StatsControllerTest {
                 .param("unique", String.valueOf(unique));
 
         mockMvc.perform(mockRequest)
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isBadRequest());
     }
 }
