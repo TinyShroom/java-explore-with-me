@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.exception.AccessDeniedException;
 import ru.practicum.exception.ErrorMessages;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.users.dao.UserRepository;
 import ru.practicum.users.dto.UserCreateDto;
 import ru.practicum.users.dto.UserDto;
+import ru.practicum.users.dto.UserSubscriptionDto;
 import ru.practicum.users.mapper.UserMapper;
 
 import java.util.List;
@@ -43,5 +45,44 @@ public class UserServiceImpl implements UserService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessages.USER_NOT_FOUND.getFormatMessage(userId)));
         userRepository.deleteById(userId);
+    }
+
+    @Override
+    @Transactional
+    public UserSubscriptionDto subscribe(long userId, long subscriptionId) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessages.USER_NOT_FOUND.getFormatMessage(userId)));
+        var subscription = userRepository.findById(subscriptionId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessages.USER_NOT_FOUND
+                        .getFormatMessage(subscriptionId)));
+        if (!user.getSubscriptions().add(subscription)) {
+            throw new AccessDeniedException(ErrorMessages.ALREADY_SUBSCRIBED.getFormatMessage(String.valueOf(userId),
+                    String.valueOf(subscriptionId)));
+        }
+        var updatedUser = userRepository.save(user);
+        return userMapper.toSubscriptionDto(updatedUser);
+    }
+
+    @Override
+    @Transactional
+    public UserSubscriptionDto unsubscribe(long userId, long subscriptionId) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessages.USER_NOT_FOUND.getFormatMessage(userId)));
+        var subscription = userRepository.findById(subscriptionId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessages.USER_NOT_FOUND
+                        .getFormatMessage(subscriptionId)));
+        if (!user.getSubscriptions().remove(subscription)) {
+            throw new AccessDeniedException(ErrorMessages.NOT_SUBSCRIBED.getFormatMessage(String.valueOf(userId),
+                    String.valueOf(subscriptionId)));
+        }
+        var updatedUser = userRepository.save(user);
+        return userMapper.toSubscriptionDto(updatedUser);
+    }
+
+    @Override
+    public UserSubscriptionDto getSubscriptions(long userId) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessages.USER_NOT_FOUND.getFormatMessage(userId)));
+        return userMapper.toSubscriptionDto(user);
     }
 }
