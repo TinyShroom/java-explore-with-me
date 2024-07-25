@@ -14,7 +14,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findAllByIdIn(List<Long> ids, Pageable pageable);
 
     @Modifying
-    @Query(value = "MERGE INTO user_subscriptions(user_id, subscription_id) values (?1, ?2)", nativeQuery = true)
+    @Query(value = "INSERT INTO user_subscriptions(user_id, subscription_id) values (?1, ?2)", nativeQuery = true)
     void addSubscription(long userId, long subscriptionId);
 
     @Modifying

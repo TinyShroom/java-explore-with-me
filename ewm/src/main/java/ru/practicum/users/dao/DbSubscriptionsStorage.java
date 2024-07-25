@@ -29,11 +29,12 @@ public class DbSubscriptionsStorage implements SubscriptionsStorage {
                 "       u.name user_name,\n" +
                 "       u.email,\n" +
                 "       ARRAY_AGG(us.subscription_id) AS subscriptions_id,\n" +
-                "       ARRAY_AGG(s.name) AS subscription_names,\n" +
+                "       ARRAY_AGG(s.name) AS subscription_names\n" +
                 "FROM users AS u\n" +
                 "JOIN user_subscriptions AS us ON u.id = us.user_id\n" +
                 "JOIN users AS s ON us.subscription_id = s.id\n" +
-                "WHERE u.id = :id;";
+                "WHERE u.id = :id\n" +
+                "GROUP BY u.id;";
         SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", userId);
         return jdbcTemplate.query(sqlReadFilmQuery, namedParameters, this::makeUser);
     }
