@@ -16,7 +16,9 @@ public enum ErrorMessages {
     REQUEST_NOT_PENDING("only pending request can be modified"),
     EVENTS_NOT_FOUND("events with id: %s not found"),
     COMPILATION_NOT_FOUND("compilation with id=%d not found"),
-    START_AFTER_END("start: %s is after end %s");
+    START_AFTER_END("start: %s is after end %s"),
+    ALREADY_SUBSCRIBED("user with id=%s already subscribed to user with id=%s"),
+    NOT_SUBSCRIBED("user with id=%s not subscribed to user with id=%s");
 
     private final String message;
 

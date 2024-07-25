@@ -2,7 +2,14 @@ package ru.practicum.events.service;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import ru.practicum.events.dto.*;
+import ru.practicum.events.dto.EventAdminGetParameter;
+import ru.practicum.events.dto.EventAdminUpdateDto;
+import ru.practicum.events.dto.EventCreateDto;
+import ru.practicum.events.dto.EventFullDto;
+import ru.practicum.events.dto.EventPrivateGetParameter;
+import ru.practicum.events.dto.EventPublicGetParameter;
+import ru.practicum.events.dto.EventShortDto;
+import ru.practicum.events.dto.EventUserUpdateDto;
 
 import java.util.List;
 
@@ -23,4 +30,6 @@ public interface EventService {
     List<EventShortDto> getAllShort(EventPublicGetParameter parameter, Pageable pageable);
 
     EventFullDto get(long eventId);
+
+    List<EventShortDto> getAllSubscriptionsShort(EventPrivateGetParameter parameter, Pageable pageable);
 }

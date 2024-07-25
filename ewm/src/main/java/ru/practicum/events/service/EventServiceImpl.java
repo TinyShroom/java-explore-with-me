@@ -11,7 +11,15 @@ import ru.practicum.categories.dao.CategoryRepository;
 import ru.practicum.categories.model.Category;
 import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.events.dao.EventRepository;
-import ru.practicum.events.dto.*;
+import ru.practicum.events.dto.EventAdminGetParameter;
+import ru.practicum.events.dto.EventAdminUpdateDto;
+import ru.practicum.events.dto.EventCreateDto;
+import ru.practicum.events.dto.EventFullDto;
+import ru.practicum.events.dto.EventPrivateGetParameter;
+import ru.practicum.events.dto.EventPublicGetParameter;
+import ru.practicum.events.dto.EventPublicSort;
+import ru.practicum.events.dto.EventShortDto;
+import ru.practicum.events.dto.EventUserUpdateDto;
 import ru.practicum.events.mapper.EventMapper;
 import ru.practicum.events.model.Event;
 import ru.practicum.events.model.EventState;
@@ -22,6 +30,7 @@ import ru.practicum.exception.NotFoundException;
 import ru.practicum.requests.dao.ParticipationRequestRepository;
 import ru.practicum.requests.model.RequestStatus;
 import ru.practicum.users.dao.UserRepository;
+import ru.practicum.users.model.User;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -29,7 +38,11 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -262,6 +275,57 @@ public class EventServiceImpl implements EventService {
                 true);
         var confirmedRequests = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
         return eventMapper.toFullDto(event, viewStats.isEmpty() ? 0 : viewStats.get(0).getHits(), confirmedRequests);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EventShortDto> getAllSubscriptionsShort(EventPrivateGetParameter parameter, Pageable pageable) {
+        var userId = parameter.getUserId();
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessages.USER_NOT_FOUND.getFormatMessage(userId)));
+        if (user.getSubscriptions().isEmpty()) {
+            return Collections.emptyList();
+        }
+        var subscriptionIds = user.getSubscriptions().stream()
+                .map(User::getId)
+                .collect(Collectors.toList());
+        var specification = new Specification<Event>() {
+            @Override
+            public Predicate toPredicate(Root<Event> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(root.get("initiator").in(subscriptionIds));
+                if (parameter.getCategories() != null && !parameter.getCategories().isEmpty()) {
+                    predicates.add(root.get("category").in(parameter.getCategories()));
+                }
+                if (parameter.getPaid() != null) {
+                    predicates.add(criteriaBuilder.equal(root.get("paid"), parameter.getPaid()));
+                }
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("eventDate"), parameter.getRangeStart()));
+
+                if (parameter.getRangeEnd() != null) {
+                    predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("eventDate"), parameter.getRangeEnd()));
+                }
+                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            }
+        };
+        var events = eventRepository.findAll(specification, pageable).stream()
+                .collect(Collectors.toList());
+        if (events.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        var confirmedRequests = getConfirmedRequests(events);
+        if (parameter.isOnlyAvailable()) {
+            events = events.stream()
+                    .filter(e -> e.getParticipantLimit() <= 0 ||
+                            e.getParticipantLimit() > confirmedRequests.getOrDefault(e.getId(), 0L))
+                    .collect(Collectors.toList());
+        }
+        var viewStats = getViews(events);
+        return events.stream()
+                .map(e -> eventMapper.toShortDto(e, viewStats.getOrDefault(e.getId(), 0L),
+                        confirmedRequests.getOrDefault(e.getId(), 0L)))
+                .collect(Collectors.toList());
     }
 
     private Map<Long, Long> getConfirmedRequests(final List<Event> events) {
