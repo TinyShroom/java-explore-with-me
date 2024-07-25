@@ -7,31 +7,31 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.logging.Logging;
-import ru.practicum.users.dto.UserSubscriptionDto;
-import ru.practicum.users.service.UserService;
+import ru.practicum.users.dto.SubscriptionDto;
+import ru.practicum.users.service.SubscriptionService;
 
 @RestController
 @RequestMapping(path = "/users/{userId}/subscriptions")
 @RequiredArgsConstructor
-public class UserController {
+public class SubscriptionController {
 
-    private final UserService userService;
+    private final SubscriptionService subscriptionService;
 
     @Logging
     @GetMapping
-    public UserSubscriptionDto get(@PathVariable long userId) {
-        return userService.getSubscriptions(userId);
+    public SubscriptionDto get(@PathVariable long userId) {
+        return subscriptionService.getSubscriptions(userId);
     }
 
     @Logging
     @PatchMapping("/{subscriptionId}")
-    public UserSubscriptionDto subscribe(@PathVariable long userId, @PathVariable long subscriptionId) {
-        return userService.subscribe(userId, subscriptionId);
+    public SubscriptionDto subscribe(@PathVariable long userId, @PathVariable long subscriptionId) {
+        return subscriptionService.subscribe(userId, subscriptionId);
     }
 
     @Logging
     @PatchMapping("/{subscriptionId}/unsubscribe")
-    public UserSubscriptionDto unsubscribe(@PathVariable long userId, @PathVariable long subscriptionId) {
-        return userService.unsubscribe(userId, subscriptionId);
+    public SubscriptionDto unsubscribe(@PathVariable long userId, @PathVariable long subscriptionId) {
+        return subscriptionService.unsubscribe(userId, subscriptionId);
     }
 }

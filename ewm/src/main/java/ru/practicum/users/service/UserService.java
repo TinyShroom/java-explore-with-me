@@ -3,7 +3,6 @@ package ru.practicum.users.service;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.users.dto.UserCreateDto;
 import ru.practicum.users.dto.UserDto;
-import ru.practicum.users.dto.UserSubscriptionDto;
 
 import java.util.List;
 
@@ -14,10 +13,4 @@ public interface UserService {
     UserDto create(UserCreateDto user);
 
     void delete(long usrId);
-
-    UserSubscriptionDto subscribe(long userId, long subscriptionId);
-
-    UserSubscriptionDto unsubscribe(long userId, long subscriptionId);
-
-    UserSubscriptionDto getSubscriptions(long userId);
 }
